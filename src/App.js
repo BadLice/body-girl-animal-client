@@ -10,7 +10,10 @@ import NavbarGame from './components/navbar.game'
 
 export default () => {
 
-  let server = "http://worddd.cloudno.de"
+  // let server = "http://worddd.cloudno.de"
+  let server = "http://localhost:15519"
+
+
   const [{ userId }, setCookie, removeCookie] = useCookies(['body-girl-animal-userId']);
 
   let [usernameSaved, setUsernameSaved] = useState(false);
@@ -19,9 +22,14 @@ export default () => {
   let connection = useSocketConnection(server, userId, setCookie, setUsername, setUsernameSaved);
 
   let [gameId, setGameId] = useState(null);
-
+  
   let [columns, setColumns] = useColumns(gameId, connection);
   let [hands, setHands] = useHands(gameId, connection, userId);
+
+  let quitGame = () => {
+    connection.emit('reqQuitGame');
+    connection.on('getQuitGame', () => window.location.reload(false));
+  }
 
   let setInputScore = (value, handId, inputIndex) => {
     let handIndex = hands.findIndex(hand => hand.id === handId)
@@ -71,12 +79,12 @@ export default () => {
       {
         gameId === null ?
           (
-            <GameList connection={connection} setGameId={setGameId} setColumns={setColumns} setHands={setHands} saveUsername={saveUsername} usernameSaved={usernameSaved} setUsernameSaved={setUsernameSaved} username={username}/>
+            <GameList connection={connection} setGameId={setGameId} setColumns={setColumns} setHands={setHands} saveUsername={saveUsername} usernameSaved={usernameSaved} setUsernameSaved={setUsernameSaved} username={username} />
           )
           :
           (
             <>
-              <NavbarGame username={username}/>
+              <NavbarGame username={username} quitGame={quitGame}/>
               <Table striped bordered hover responsive variant="dark">
                 <thead>
                   <tr>
@@ -103,7 +111,7 @@ let useColumns = (gameId, connection) => {
       connection.emit('reqColumns', gameId);
       connection.on('getColumns', columns => setColumns(columns.concat(['Actions', 'Total'])));
     }
-  }, [gameId, connection]);
+  }, [gameId]);
 
   return [columns, setColumns];
 }
@@ -116,7 +124,7 @@ let useHands = (gameId, connection, userId) => {
       connection.emit('reqHands', { gameId: gameId, userId: userId });
       connection.on('getHands', hands => setHands(hands));
     }
-  }, [gameId, connection, userId]);
+  }, [gameId, userId]);
 
   return [hands, setHands];
 }
@@ -126,11 +134,17 @@ let useSocketConnection = (server, userId, setCookie, setUsername, setUsernameSa
   let [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const s = socketIOClient(server);
+    var connectionOptions = {
+      "force new connection": true,
+      "reconnectionAttempts": "Infinity", //avoid having user reconnect manually in order to prevent dead clients after a server restart
+      "timeout": 10000,                  //before connect_error and connect_timeout are emitted.
+      "transports": ["websocket"]
+    };
+    const s = socketIOClient(server, connectionOptions);
 
     if (!userId || (Object.keys(userId).length === 0 && userId.constructor === Object)) {
       s.emit('reqUserId');
-      s.on('getUserId', userId => setCookie('userId', userId, { maxAge: 3600 * 8 }))
+      s.on('getUserId', user => setCookie('userId', user.id, { maxAge: 3600 * 8 }) && setUsername(user.name))
     } else {
       s.emit('reqUsername', userId);
       s.on('getUsername', username => {

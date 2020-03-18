@@ -4,16 +4,24 @@ import { Button, Navbar, Form, InputGroup, FormControl } from 'react-bootstrap';
 
 export default props => {
     let usernameRef = useRef();
+    let searchRef = useRef();
+
+    let submit = (e,callback) => {
+        e.preventDefault();
+        e.stopPropagation();
+        callback();
+    }
+
     return (
         <>
             <Navbar className="bg-light justify-content-between" bg="dark" variant="dark">
-                <Form inline>
+                <Form inline onSubmit={(e) => submit(e, () => props.saveUsername(usernameRef.current.value.trim()))}>
                     <InputGroup className="mr-sm-2" onChange={() => props.setUsernameSaved(usernameRef.current.value.trim() === '')}>
                         <InputGroup.Prepend>
                             <InputGroup.Text id="basic-addon1">
                                 <span role="img" aria-label="user-avatar-icon">
                                     👤
-                                    </span>
+                                </span>
                             </InputGroup.Text>
                         </InputGroup.Prepend>
                         <FormControl
@@ -26,9 +34,10 @@ export default props => {
                     </InputGroup>
                     <Button onClick={() => props.saveUsername(usernameRef.current.value.trim())} disabled={props.usernameSaved}>Save</Button>
                 </Form>
-                <Form inline>
-                    <FormControl type="text" placeholder="Type ID or name..." className=" mr-sm-2" />
-                    <Button type="submit">Search</Button>
+                <Form inline onSubmit={(e) => submit(e, () => props.setSeatchText(searchRef.current.value.trim()))}>
+                    <Button variant="success" className=" mr-sm-2">Create game</Button>
+                    <FormControl ref={searchRef} type="text" placeholder="Type ID or name..." className=" mr-sm-2" />
+                    <Button onClick={() => props.setSeatchText(searchRef.current.value.trim())}>Search</Button>
                 </Form>
             </Navbar>
         </>

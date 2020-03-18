@@ -25,7 +25,7 @@ export default props => {
                     </InputGroup>
                 </Form>
                 <Form inline>
-                    <Button variant="danger">Quit game</Button>
+                    <Button variant="danger" onClick={() => props.quitGame()}>Quit game</Button>
                 </Form>
             </Navbar>
         </>

@@ -2,9 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Button } from 'react-bootstrap';
 import NavBar from './navbar.gamelist'
-
+import CreateGameModal from './create.game.modal'
 export default props => {
     let games = useGames(props.connection);
+    let [searchText, setSeatchText] = useState('');
 
     let joinGame = (gameId) => {
         props.connection.emit('reqJoinGame', gameId);
@@ -14,11 +15,18 @@ export default props => {
         })
     }
 
+    let gameFilter = (game) => game.id.includes(searchText) || game.name.includes(searchText);
+
+
+
+    console.log(games.filter(gameFilter))
+
     return (
         <>
-            <NavBar saveUsername={props.saveUsername} setUsernameSaved={props.setUsernameSaved} username={props.username} usernameSaved={props.usernameSaved}/>
+            <NavBar setSeatchText={setSeatchText} saveUsername={props.saveUsername} setUsernameSaved={props.setUsernameSaved} username={props.username} usernameSaved={props.usernameSaved}/>
+            <CreateGameModal/>
             {
-                games.map(game =>
+                games.filter(gameFilter).map(game =>
                     <Card key={game.id} border="primary" className="m-2 game-card" >
                         <Card.Body>
                             <Card.Title>{game.name}</Card.Title>
@@ -57,8 +65,7 @@ let useGames = (connection) => {
     useEffect(() => {
         if (connection) {
             connection.emit('reqGames');
-
-            connection.on('getGames', (data) => setGames(data))
+            connection.on('getGames', (data) => setInterval(()=>setGames(data)),10000)
         }
     }, [connection]);
 
