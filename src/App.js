@@ -10,7 +10,7 @@ import NavbarGame from './components/navbar.game'
 
 export default () => {
 
-  let server = "http://worddd.cloudno.de:15519"
+  let server = "http://worddd.cloudno.de"
   const [{ userId }, setCookie, removeCookie] = useCookies(['body-girl-animal-userId']);
 
   let [usernameSaved, setUsernameSaved] = useState(false);
