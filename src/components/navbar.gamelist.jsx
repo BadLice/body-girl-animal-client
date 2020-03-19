@@ -6,10 +6,12 @@ export default props => {
     let usernameRef = useRef();
     let searchRef = useRef();
 
-    let submit = (e,callback) => {
+    const submit = (e, callback) => {
         e.preventDefault();
         e.stopPropagation();
-        callback();
+        if (callback) {
+            callback();
+        }
     }
 
     return (
@@ -35,7 +37,7 @@ export default props => {
                     <Button onClick={() => props.saveUsername(usernameRef.current.value.trim())} disabled={props.usernameSaved}>Save</Button>
                 </Form>
                 <Form inline onSubmit={(e) => submit(e, () => props.setSeatchText(searchRef.current.value.trim()))}>
-                    <Button variant="success" className=" mr-sm-2">Create game</Button>
+                    <Button variant="success" className=" mr-sm-2" onClick={() => props.createGame()}>Create game</Button>
                     <FormControl ref={searchRef} type="text" placeholder="Type ID or name..." className=" mr-sm-2" />
                     <Button onClick={() => props.setSeatchText(searchRef.current.value.trim())}>Search</Button>
                 </Form>

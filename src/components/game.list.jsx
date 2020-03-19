@@ -6,25 +6,31 @@ import CreateGameModal from './create.game.modal'
 export default props => {
     let games = useGames(props.connection);
     let [searchText, setSeatchText] = useState('');
+    const [showCreateGameModal, setShowCreateGameModal] = useState(false);
+    const [newGameId, setNewGameId] = useState(null);
+
+    const createGame = () => {
+        props.connection.emit('reqCreateGame');
+        props.connection.on('getCreateGame', gameId => {
+            setNewGameId(gameId);
+            setShowCreateGameModal(true)
+        });
+    }
 
     let joinGame = (gameId) => {
         props.connection.emit('reqJoinGame', gameId);
 
         props.connection.on('getJoinGame', success => {
-            success ? props.setGameId(gameId) : props.setGameId(null);
+            if (success) props.history.push("/game?id=" + gameId);
         })
     }
 
     let gameFilter = (game) => game.id.includes(searchText) || game.name.includes(searchText);
 
-
-
-    console.log(games.filter(gameFilter))
-
     return (
         <>
-            <NavBar setSeatchText={setSeatchText} saveUsername={props.saveUsername} setUsernameSaved={props.setUsernameSaved} username={props.username} usernameSaved={props.usernameSaved}/>
-            <CreateGameModal/>
+            <NavBar createGame={createGame} setSeatchText={setSeatchText} saveUsername={props.saveUsername} setUsernameSaved={props.setUsernameSaved} username={props.username} usernameSaved={props.usernameSaved} />
+            <CreateGameModal show={showCreateGameModal} newGameId={newGameId} setShow={setShowCreateGameModal} connection={props.connection} history={props.history}/>
             {
                 games.filter(gameFilter).map(game =>
                     <Card key={game.id} border="primary" className="m-2 game-card" >
@@ -65,7 +71,8 @@ let useGames = (connection) => {
     useEffect(() => {
         if (connection) {
             connection.emit('reqGames');
-            connection.on('getGames', (data) => setInterval(()=>setGames(data)),10000)
+            connection.on('getGames', (data) => setGames(data))
+            return () => connection.off('getGames');
         }
     }, [connection]);
 
