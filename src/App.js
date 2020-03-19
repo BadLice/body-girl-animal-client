@@ -19,8 +19,8 @@ export default () => {
 
   console.log('gameId: ' + gameId);
 
-  // let server = "http://worddd.cloudno.de"
-  let server = "http://localhost:15519"
+  // let server = "http://localhost:15519"
+  let server = "http://worddd.cloudno.de"
 
   const [{ userId }, setCookie, removeCookie] = useCookies(['body-girl-animal-userId']);
 
