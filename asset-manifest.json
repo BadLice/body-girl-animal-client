@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/body-girl-animal-client/static/css/main.fa37ff0a.chunk.css",
-    "main.js": "/body-girl-animal-client/static/js/main.cded3561.chunk.js",
-    "main.js.map": "/body-girl-animal-client/static/js/main.cded3561.chunk.js.map",
+    "main.js": "/body-girl-animal-client/static/js/main.ae28beca.chunk.js",
+    "main.js.map": "/body-girl-animal-client/static/js/main.ae28beca.chunk.js.map",
     "runtime-main.js": "/body-girl-animal-client/static/js/runtime-main.6fd51d2c.js",
     "runtime-main.js.map": "/body-girl-animal-client/static/js/runtime-main.6fd51d2c.js.map",
     "static/css/2.de424728.chunk.css": "/body-girl-animal-client/static/css/2.de424728.chunk.css",
     "static/js/2.be5ef3a0.chunk.js": "/body-girl-animal-client/static/js/2.be5ef3a0.chunk.js",
     "static/js/2.be5ef3a0.chunk.js.map": "/body-girl-animal-client/static/js/2.be5ef3a0.chunk.js.map",
     "index.html": "/body-girl-animal-client/index.html",
-    "precache-manifest.6bf6f5f9cff43ee9784137b732329ecf.js": "/body-girl-animal-client/precache-manifest.6bf6f5f9cff43ee9784137b732329ecf.js",
+    "precache-manifest.2bc5711cd519790b5cc98ab548c0b172.js": "/body-girl-animal-client/precache-manifest.2bc5711cd519790b5cc98ab548c0b172.js",
     "service-worker.js": "/body-girl-animal-client/service-worker.js",
     "static/css/2.de424728.chunk.css.map": "/body-girl-animal-client/static/css/2.de424728.chunk.css.map",
     "static/css/main.fa37ff0a.chunk.css.map": "/body-girl-animal-client/static/css/main.fa37ff0a.chunk.css.map",
@@ -20,6 +20,6 @@
     "static/css/2.de424728.chunk.css",
     "static/js/2.be5ef3a0.chunk.js",
     "static/css/main.fa37ff0a.chunk.css",
-    "static/js/main.cded3561.chunk.js"
+    "static/js/main.ae28beca.chunk.js"
   ]
 }
