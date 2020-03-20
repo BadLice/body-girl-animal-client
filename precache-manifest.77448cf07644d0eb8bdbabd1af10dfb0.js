@@ -1,27 +1,27 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "9f62f7d3ba68fcef207926478989124d",
+    "revision": "e3314a9c2271def6a5f71f053ec6b9a7",
     "url": "/body-girl-animal-client/index.html"
   },
   {
-    "revision": "8c9b15a7d94e0522cae8",
+    "revision": "b0ea96cc97e38c5a0d38",
     "url": "/body-girl-animal-client/static/css/2.de424728.chunk.css"
   },
   {
-    "revision": "1ad44114804406a09d4a",
+    "revision": "e3dfe2382293977b2e74",
     "url": "/body-girl-animal-client/static/css/main.fa37ff0a.chunk.css"
   },
   {
-    "revision": "8c9b15a7d94e0522cae8",
-    "url": "/body-girl-animal-client/static/js/2.be5ef3a0.chunk.js"
+    "revision": "b0ea96cc97e38c5a0d38",
+    "url": "/body-girl-animal-client/static/js/2.25f3bca7.chunk.js"
   },
   {
     "revision": "aa67f838c351ac6c65583a5c8b8fb5fa",
-    "url": "/body-girl-animal-client/static/js/2.be5ef3a0.chunk.js.LICENSE.txt"
+    "url": "/body-girl-animal-client/static/js/2.25f3bca7.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "1ad44114804406a09d4a",
-    "url": "/body-girl-animal-client/static/js/main.ae28beca.chunk.js"
+    "revision": "e3dfe2382293977b2e74",
+    "url": "/body-girl-animal-client/static/js/main.a398c602.chunk.js"
   },
   {
     "revision": "a33fb9a971d73990531a",
