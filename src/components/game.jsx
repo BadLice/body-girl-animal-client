@@ -1,11 +1,27 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React from 'react';
-import { Table } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Table, Alert, ListGroup, Spinner} from 'react-bootstrap';
 import Hands from './hands';
 import TotalRow from './total.row';
 import NavbarGame from './navbar.game'
+import LoadingGame from './game.loading'
 
 export default props => {
+    let timer = useTimer(props.connection);
+
+    useEffect(() => {
+        if (props.connection && props.gameId) {
+            props.connection.emit('reqJoinGame', props.gameId);
+            
+            props.connection.on('getJoinGame', success => {
+                if (success) {
+                    props.connection.emit('reqGameStarted', props.gameId);
+                }
+            })
+            return () => props.connection.off('getJoinGame');
+        }
+    }, [props.connection, props.gameId])
+
 
     let quitGame = () => {
         props.connection.emit('reqQuitGame');
@@ -51,20 +67,63 @@ export default props => {
         props.setHands(h);
     }
 
+    if (!props.gameExists) {
+        return (
+            <>
+                <NavbarGame username={props.username} quitGame={quitGame} users={props.users} timer={timer}/>
+                <Alert variant="danger" className="m-3">
+                    <Alert.Heading>ERROR 404</Alert.Heading>
+                    <p>
+                        Not found
+                    </p>
+                    <hr />
+                    <p className="mb-0">
+                        This game does not exists!
+                    </p>
+                </Alert>
+            </>
+        );
+    }
+
     return (
         <>
-            <NavbarGame username={props.username} quitGame={quitGame} />
-            <Table striped bordered hover responsive variant="dark">
-                <thead>
-                    <tr>
-                        {props.columns.map((c, i) => <th key={i}>{c}</th>)}
-                    </tr>
-                </thead>
-                <tbody>
-                    <Hands hands={props.hands} setInputScore={setInputScore} setInputValue={setInputValue} confirmHand={confirmHand} submitHand={submitHand} />
-                </tbody>
-            </Table >
-            <TotalRow columns={props.columns} hands={props.hands} />
+            <NavbarGame username={props.username} quitGame={quitGame} users={props.users} timer={timer} />
+
+            {
+                props.gameStarted ? (
+                    <>
+                        <Table striped bordered hover responsive variant="dark">
+                            <thead>
+                                <tr>
+                                    {props.columns.map((c, i) => <th key={i}>{c}</th>)}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <Hands hands={props.hands} setInputScore={setInputScore} setInputValue={setInputValue} confirmHand={confirmHand} submitHand={submitHand} />
+                            </tbody>
+                        </Table >
+                        <TotalRow columns={props.columns} hands={props.hands} />
+                    </>
+                )
+                :
+                (
+                    <LoadingGame users={props.users}/>
+                )
+            }
+
         </>
     )
+}
+
+const useTimer = (connection) => {
+    const [timer,setTimer] = useState('sync...');
+
+    useEffect(()=> {
+        if(connection) {
+            connection.on('syncTimer', timer => setTimer(timer));
+            return () => connection.off('syncTimer');
+        }
+    },[connection])
+
+    return timer;
 }

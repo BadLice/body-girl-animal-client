@@ -5,6 +5,8 @@ import ConfirmButton from './confirm.button'
 export default props => {
     let handTotalScore = props.hand.inputs.reduce((tot, input) => tot + input.score, 0)
 
+    console.log(props.hand.state)
+
     return (
         <>
             <td className="align-middle">{props.hand.character}</td>

@@ -13,27 +13,41 @@ import {
 } from "react-router-dom";
 
 export default () => {
+  let server = "http://192.168.1.69:15519"
+  // let server = "http://worddd.cloudno.de"
+
   const history = useHistory();
 
-  let gameId = useQuery().get('id');
-
-  console.log('gameId: ' + gameId);
-
-  // let server = "http://localhost:15519"
-  let server = "http://worddd.cloudno.de"
-
   const [{ userId }, setCookie, removeCookie] = useCookies(['body-girl-animal-userId']);
-
   let [usernameSaved, setUsernameSaved] = useState(false);
   let [username, setUsername] = useState('');
 
   let connection = useSocketConnection(server, userId, setCookie, setUsername, setUsernameSaved);
 
-  // let [gameId, setGameId] = useState(null);
-  let [columns, setColumns] = useColumns(gameId, connection);
-  let [hands, setHands] = useHands(gameId, connection, userId);
+  let gameId = useQuery().get('id');
+  let [gameExists, setGameExists] = useGameExists(gameId, connection);
+  let [gameStarted, setGameStarted] = useStarted(gameExists, gameId, userId, connection);
+  let [columns, setColumns] = useColumns(gameId, connection, gameExists, gameStarted);
+  let [hands, setHands] = useHands(gameId, connection, userId, gameExists, gameStarted);
+  const [users, setUsers] = useState([]);
 
+  useEffect(() => {
+    if (connection && userId && gameId && hands) {
+      connection.on('giveHands', () => {
+        console.log('sending...')
+        console.log(hands)
+        connection.emit('hereHands', { hands: hands, userId: userId, gameId: gameId });
+      });
+    }
+  }, [connection && userId && gameId && hands]);
 
+  useEffect(() => {
+    if (connection) {
+      connection.on('getUsersConnected', users => setUsers(users));
+      return () => connection.off('getUsersConnected');
+    }
+    
+  }, [connection])
 
   let saveUsername = value => {
     connection.emit('reqSaveUsername', { id: userId, name: value });
@@ -43,41 +57,59 @@ export default () => {
     <Switch>
 
       <Route path="/game">
-        <Game connection={connection} setColumns={setColumns} setHands={setHands} saveUsername={saveUsername} usernameSaved={usernameSaved} setUsernameSaved={setUsernameSaved} username={username} columns={columns} hands={hands} gameId={gameId} history={history} />
+        <Game connection={connection} setColumns={setColumns} setHands={setHands} saveUsername={saveUsername} usernameSaved={usernameSaved} setUsernameSaved={setUsernameSaved} username={username} columns={columns} hands={hands} gameId={gameId} history={history} gameId={gameId} gameExists={gameExists} users={users} gameStarted={gameStarted} />
       </Route>
 
       <Route path="/">
-        <GameList connection={connection} setColumns={setColumns} setHands={setHands} saveUsername={saveUsername} usernameSaved={usernameSaved} setUsernameSaved={setUsernameSaved} username={username} gameId={gameId} history={history} />
+        <GameList connection={connection} setColumns={setColumns} setHands={setHands} saveUsername={saveUsername} usernameSaved={usernameSaved} setUsernameSaved={setUsernameSaved} username={username} gameId={gameId} history={history} users={users} gameStarted={gameStarted} />
       </Route>
 
     </Switch>
   );
 }
 
-let useColumns = (gameId, connection) => {
-  let [columns, setColumns] = useState([]);
+let useGameExists = (gameId, connection) => {
+  let [gameExists, setGameExists] = useState(false);
 
   useEffect(() => {
     if (connection && gameId) {
+      connection.emit('reqGameExists', gameId);
+      connection.on('getGameExists', gameExists => setGameExists(gameExists));
+      return () => connection.off('getGameExists');
+    }
+  }, [connection, gameId]);
+
+  return [gameExists, setGameExists];
+}
+
+let useColumns = (gameId, connection, gameExists, gameStarted) => {
+  let [columns, setColumns] = useState([]);
+
+  useEffect(() => {
+    if (connection && gameId && gameExists && gameStarted) {
       connection.emit('reqColumns', gameId);
-      connection.on('getColumns', columns => setColumns(columns.concat(['Actions', 'Total'])));
+      connection.on('getColumns', columns => setColumns(['Character'].concat(columns.concat(['Actions', 'Total']))));
       return () => connection.off('getColumns')
     }
-  }, [gameId]);
+  }, [gameId, connection, gameExists, gameStarted]);
 
   return [columns, setColumns];
 }
 
-let useHands = (gameId, connection, userId) => {
+let useHands = (gameId, connection, userId, gameExists, gameStarted) => {
   let [hands, setHands] = useState([]);
 
   useEffect(() => {
-    if (connection && gameId) {
+    if (connection && gameId && gameExists && gameStarted) {
       connection.emit('reqHands', { gameId: gameId, userId: userId });
       connection.on('getHands', hands => setHands(hands));
-      return () => connection.off('getHands')
+
+      return () => {
+        connection.off('giveHands')
+        connection.off('getHands')
+      }
     }
-  }, [gameId, userId]);
+  }, [gameId, connection, userId, gameExists, gameStarted]);
 
   return [hands, setHands];
 }
@@ -107,7 +139,6 @@ let useSocketConnection = (server, userId, setCookie, setUsername, setUsernameSa
     });
     s.on('getUserId', user => setCookie('userId', user.id, { maxAge: 3600 * 8 }) && setUsername(user.name))
 
-    console.log('SOCKET ID: ' + s.id)
     setSocket(s);
 
     return () => {
@@ -119,6 +150,20 @@ let useSocketConnection = (server, userId, setCookie, setUsername, setUsernameSa
 
   return socket;
 
+}
+
+const useStarted = (gameExists, gameId, userId, connection) => {
+  let [started, setStarted] = useState(false);
+
+  useEffect(() => {
+    if (connection && gameId && gameExists && userId) {
+      connection.emit('reqGameStarted', gameId);
+      connection.on('getGameStarted', res => setStarted(res))
+      return () => connection.off('getGameStarted');
+    }
+  }, [gameExists, gameId, userId, connection])
+
+  return [started, setStarted];
 }
 
 const useQuery = () => {

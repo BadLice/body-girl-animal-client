@@ -11,14 +11,7 @@ export default props => {
     const generateField = () => ({ value: '', ref: createRef() });
     const [fields, setFields] = useState([generateField()]);
     const gameNameRef = useRef();
-    const [users, setUsers] = useState([]);
-
-    useEffect(() => {
-        if (props.connection) {
-            props.connection.on('getUsersConnected', users => setUsers(users));
-            return () => props.connection.off('getUsersConnected');
-        }
-    }, [props.connection])
+    
     
     const submit = (e, callback) => {
         e.preventDefault();
@@ -91,7 +84,7 @@ export default props => {
                     <FormText className="font-weight-bold">Users connected</FormText>
                     <ListGroup>
                         {
-                            users.map((user,i) =>
+                            props.users.map((user,i) =>
                                 <ListGroup.Item key={i}>{user.name}</ListGroup.Item>
                             )
                         }

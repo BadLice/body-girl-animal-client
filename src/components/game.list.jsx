@@ -18,11 +18,9 @@ export default props => {
     }
 
     let joinGame = (gameId) => {
-        props.connection.emit('reqJoinGame', gameId);
+        props.history.push("/game?id=" + gameId);
 
-        props.connection.on('getJoinGame', success => {
-            if (success) props.history.push("/game?id=" + gameId);
-        })
+        
     }
 
     let gameFilter = (game) => game.id.includes(searchText) || game.name.includes(searchText);
@@ -30,7 +28,7 @@ export default props => {
     return (
         <>
             <NavBar createGame={createGame} setSeatchText={setSeatchText} saveUsername={props.saveUsername} setUsernameSaved={props.setUsernameSaved} username={props.username} usernameSaved={props.usernameSaved} />
-            <CreateGameModal show={showCreateGameModal} newGameId={newGameId} setShow={setShowCreateGameModal} connection={props.connection} history={props.history}/>
+            <CreateGameModal show={showCreateGameModal} newGameId={newGameId} setShow={setShowCreateGameModal} connection={props.connection} history={props.history} users={props.users}/>
             {
                 games.filter(gameFilter).map(game =>
                     <Card key={game.id} border="primary" className="m-2 game-card" >
