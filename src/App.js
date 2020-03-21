@@ -13,8 +13,8 @@ import {
 } from "react-router-dom";
 
 export default () => {
-  let server = "http://192.168.1.69:15519"
-  // let server = "http://worddd.cloudno.de"
+  // let server = "http://192.168.1.69:15519"
+  let server = "http://worddd.cloudno.de"
 
   const history = useHistory();
 
