@@ -38,7 +38,7 @@ export default () => {
           connection.emit('handTimeoutClientResponse', { hands: hands, userId: userId, gameId: gameId });
         });
     }
-  }, [connection && userId && gameId && hands]);
+  }, [connection,userId, gameId, hands]);
 
   useEffect(() => {
     if (connection) {
@@ -59,7 +59,7 @@ export default () => {
     <Switch>
 
       <Route path="/game">
-        <Game connection={connection} setColumns={setColumns} setHands={setHands} saveUsername={saveUsername} usernameSaved={usernameSaved} setUsernameSaved={setUsernameSaved} username={username} columns={columns} hands={hands} gameId={gameId} history={history} gameId={gameId} gameExists={gameExists} users={users} gameStarted={gameStarted} />
+        <Game connection={connection} setColumns={setColumns} setHands={setHands} saveUsername={saveUsername} usernameSaved={usernameSaved} setUsernameSaved={setUsernameSaved} username={username} columns={columns} hands={hands} gameId={gameId} history={history} gameExists={gameExists} users={users} gameStarted={gameStarted} />
       </Route>
 
       <Route path="/">

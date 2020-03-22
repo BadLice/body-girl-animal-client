@@ -5,7 +5,6 @@ import Hands from './hands';
 import TotalRow from './total.row';
 import NavbarGame from './navbar.game'
 import LoadingGame from './game.loading'
-import { Redirect} from 'react-router-dom'
 
 export default props => {
     let timer = useTimer(props.connection);
@@ -60,13 +59,6 @@ export default props => {
         let handIndex = props.hands.findIndex(hand => hand.id === handId)
         let h = [...props.hands];
         h[handIndex].state = 'submitted';
-
-        props.setHands(h);
-    }
-
-    let addHand = (newHand) => {
-        let h = [...props.hands];
-        h.push(newHand);
 
         props.setHands(h);
     }
