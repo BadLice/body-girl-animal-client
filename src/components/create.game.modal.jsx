@@ -29,9 +29,7 @@ export default props => {
         if (tv) {
             t.value = timer.ref.current.value.trim().length === 0 ? 60 : Number(timer.ref.current.value.trim())
         }
-
-        console.log(t.value)
-
+        
         setTimer({
             ...timer,
             valid: t.valid,
