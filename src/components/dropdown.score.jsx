@@ -10,6 +10,7 @@ export default props => {
         case 10: variant = 'success'; break;
         default: variant = 'danger'; break;
     }
+    
 
     return (
         props.handState !== 'confirmed' ?
@@ -27,8 +28,16 @@ export default props => {
                     title={props.toggle}
                 >
                     <Dropdown.Item eventKey={0}>0</Dropdown.Item>
-                    <Dropdown.Item eventKey={5}>5</Dropdown.Item>
-                    <Dropdown.Item eventKey={10}>10</Dropdown.Item>
+                    {
+                        props.inputValid ?
+                            (
+                                <>
+                                    <Dropdown.Item eventKey={5}>5</Dropdown.Item>
+                                    <Dropdown.Item eventKey={10}>10</Dropdown.Item>
+                                </>
+                            )
+                            : ''
+                    }
                 </DropdownButton>
             )
     )

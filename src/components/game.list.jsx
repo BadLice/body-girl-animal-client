@@ -11,6 +11,7 @@ export default props => {
 
     const createGame = () => {
         props.connection.emit('reqCreateGame');
+        props.connection.off('getCreateGame');
         props.connection.on('getCreateGame', gameId => {
             setNewGameId(gameId);
             setShowCreateGameModal(true)
@@ -70,7 +71,10 @@ let useGames = (connection) => {
         if (connection) {
             connection.emit('reqGames');
             connection.on('getGames', (data) => setGames(data))
-            return () => connection.off('getGames');
+            return () => {
+                connection.off('getCreateGame');
+                connection.off('getGames');
+            }
         }
     }, [connection]);
 

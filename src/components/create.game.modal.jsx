@@ -21,10 +21,19 @@ export default props => {
         }
     }
 
+    const validateField = () => {
+        setFields([...fields].map(f => ({ ...f, valid: f.value.trim() !== ''})))
+    }
+
     const startGame = () => {
-        props.connection.emit('startGame', { gameId: props.newGameId, name: gameNameRef.current.value.trim(), columns: fields.map(f => f.value)});
-        props.history.push("/game?id=" + props.newGameId);
-        props.setShow(false);
+        let valid = true;
+        fields.forEach(f => valid &= f.valid);
+        
+        if (valid) {
+            props.connection.emit('startGame', { gameId: props.newGameId, name: gameNameRef.current.value.trim(), columns: fields.map(f => f.value.trim())});
+            props.history.push("/game?id=" + props.newGameId);
+            props.setShow(false);
+        }
     }
 
     const setField = (i, value) => {
@@ -62,9 +71,9 @@ export default props => {
                 <Modal.Body>
                     <FormText className="font-weight-bold">Fields</FormText>
                     {
-                        fields.map((_, i) =>
+                        fields.map((field, i) =>
                             <Form key={i} inline className=" mt-1" onSubmit={(e) => submit(e)}>
-                                <Form.Control ref={fields[i].ref} type="text" placeholder="Istert field..." style={{ width: '80%' }} className=" mr-sm-1" onChange={() => setField(i)} value={fields[i].value} />
+                                <Form.Control isInvalid={!field.valid} ref={field.ref} type="text" placeholder="Istert field..." style={{ width: '80%' }} className=" mr-sm-1" onChange={() => setField(i)} value={field.value} onBlur={validateField}/>
                                 {
                                     fields.length > 1 ?
                                         <Button variant="danger" className=" mr-sm-1" onClick={() => removeField(i)}>-</Button>

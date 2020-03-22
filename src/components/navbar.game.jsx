@@ -24,7 +24,8 @@ export default props => {
                             return (
                                 <ListGroup.Item key={i}>
                                     <div className="row">
-                                        <div className={"col-xs-6 mr-2 "}>{(i + 1)}</div>
+                                        <div className={"col-xs-6 mr-2 "}><span style={{ visibility: i === 0 ? 'visible' : 'hidden' }}>&#128081;</span></div>
+                                        {/* <div className={"col-xs-6 mr-2 "}>{(i + 1)}.</div> */}
                                         <div className={"col-xs-6 mr-2 " + textColor}>{user.score}</div>
                                         <div className="col-xs-6 ">{user.name}</div>
                                     </div>
@@ -38,7 +39,7 @@ export default props => {
         </Popover>
     );
 
-    console.log(props.timer);
+    // console.log(props.timer);
 
     return (
         <>

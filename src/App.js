@@ -33,16 +33,16 @@ export default () => {
 
   useEffect(() => {
     if (connection && userId && gameId && hands) {
-      connection.on('giveHands', () => {
-        console.log('sending...')
-        console.log(hands)
-        connection.emit('hereHands', { hands: hands, userId: userId, gameId: gameId });
-      });
+      connection.off('handTimeout')  
+      connection.on('handTimeout', () => {
+          connection.emit('handTimeoutClientResponse', { hands: hands, userId: userId, gameId: gameId });
+        });
     }
   }, [connection && userId && gameId && hands]);
 
   useEffect(() => {
     if (connection) {
+      connection.off('getUsersConnected')
       connection.on('getUsersConnected', users => setUsers(users));
       return () => connection.off('getUsersConnected');
     }
@@ -51,8 +51,10 @@ export default () => {
 
   let saveUsername = value => {
     connection.emit('reqSaveUsername', { id: userId, name: value });
+    connection.off('getSaveUsername');
     connection.on('getSaveUsername', success => success && setUsernameSaved(true) && setUsername(value));
   }
+
   return (
     <Switch>
 
@@ -88,6 +90,7 @@ let useColumns = (gameId, connection, gameExists, gameStarted) => {
   useEffect(() => {
     if (connection && gameId && gameExists && gameStarted) {
       connection.emit('reqColumns', gameId);
+      connection.off('getColumns');
       connection.on('getColumns', columns => setColumns(['Character'].concat(columns.concat(['Actions', 'Total']))));
       return () => connection.off('getColumns')
     }
@@ -102,10 +105,11 @@ let useHands = (gameId, connection, userId, gameExists, gameStarted) => {
   useEffect(() => {
     if (connection && gameId && gameExists && gameStarted) {
       connection.emit('reqHands', { gameId: gameId, userId: userId });
+      connection.off('getHands');
       connection.on('getHands', hands => setHands(hands));
 
       return () => {
-        connection.off('giveHands')
+        connection.off('handTimeout')
         connection.off('getHands')
       }
     }
@@ -133,10 +137,12 @@ let useSocketConnection = (server, userId, setCookie, setUsername, setUsernameSa
       s.emit('reqUsername', userId);
     }
 
+    s.off('getUsername');
     s.on('getUsername', username => {
       setUsername(username);
       setUsernameSaved(true);
     });
+    s.off('getUserId');
     s.on('getUserId', user => setCookie('userId', user.id, { maxAge: 3600 * 8 }) && setUsername(user.name))
 
     setSocket(s);
@@ -158,6 +164,7 @@ const useStarted = (gameExists, gameId, userId, connection) => {
   useEffect(() => {
     if (connection && gameId && gameExists && userId) {
       connection.emit('reqGameStarted', gameId);
+      connection.off('getGameStarted');
       connection.on('getGameStarted', res => setStarted(res))
       return () => connection.off('getGameStarted');
     }
