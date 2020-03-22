@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/body-girl-animal-client/precache-manifest.af693461cfc96a4aac0951fade194c41.js"
+  "/body-girl-animal-client/precache-manifest.5747732e19a250d5f93b1f2e3276ae94.js"
 );
 
 self.addEventListener('message', (event) => {
