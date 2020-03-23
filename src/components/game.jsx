@@ -3,128 +3,143 @@ import React, { useState, useEffect } from 'react';
 import { Table, Alert } from 'react-bootstrap';
 import Hands from './hands';
 import TotalRow from './total.row';
-import NavbarGame from './navbar.game'
-import LoadingGame from './game.loading'
-
+import NavbarGame from './navbar.game';
+import LoadingGame from './game.loading';
+import { useParams } from 'react-router-dom';
 export default props => {
-    let timer = useTimer(props.connection);
+	let timer = useTimer(props.connection);
 
-    useEffect(() => {
-        if (props.connection && props.gameId) {
-            props.connection.emit('reqJoinGame', props.gameId);
-            props.connection.off('getJoinGame');
-            props.connection.on('getJoinGame', success => {
-                if (success) {
-                    props.connection.emit('reqGameStarted', props.gameId);
-                }
-            })
-            return () => props.connection.off('getJoinGame');
-        }
-    }, [props.connection, props.gameId])
+	let { gameId } = useParams();
 
+	useEffect(() => {
+		if (gameId) props.setGameId(gameId);
+	}, [gameId]);
 
-    let quitGame = () => {
-        props.connection.emit('reqQuitGame');
-        props.connection.off('getQuitGame');
-        props.connection.on('getQuitGame', () => props.history.push('/'));
-    }
+	useEffect(() => {
+		if (props.connection && props.gameId) {
+			props.connection.emit('reqJoinGame', props.gameId);
+			props.connection.off('getJoinGame');
+			props.connection.on('getJoinGame', success => {
+				if (success) {
+					props.connection.emit('reqGameStarted', props.gameId);
+				}
+			});
+			return () => props.connection.off('getJoinGame');
+		}
+	}, [props.connection, props.gameId]);
 
-    let setInputScore = (value, handId, inputIndex) => {
-        let handIndex = props.hands.findIndex(hand => hand.id === handId)
-        let h = [...props.hands];
-        h[handIndex].inputs[inputIndex].score = Number(value);
+	let quitGame = () => {
+		props.connection.emit('reqQuitGame');
+		props.connection.off('getQuitGame');
+		props.connection.on('getQuitGame', () => props.history.push(''));
+	};
 
-        props.setHands(h);
-    }
+	let setInputScore = (value, handId, inputIndex) => {
+		let handIndex = props.hands.findIndex(hand => hand.id === handId);
+		let h = [...props.hands];
+		h[handIndex].inputs[inputIndex].score = Number(value);
 
-    let setInputValue = (value, handId, inputIndex, handCharacter) => {
-        if (value.trim().toUpperCase().charAt(0) === handCharacter.toUpperCase().charAt(0)) {
-            let handIndex = props.hands.findIndex(hand => hand.id === handId)
-            let h = [...props.hands];
-            h[handIndex].inputs[inputIndex].value = value;
-    
-            props.setHands(h);
-        }
-    }
+		props.setHands(h);
+	};
 
-    let confirmHand = (handId) => {
-        let handIndex = props.hands.findIndex(hand => hand.id === handId)
-        let h = [...props.hands];
-        h[handIndex].state = 'waiting';
+	let setInputValue = (value, handId, inputIndex, handCharacter) => {
+		if (
+			value
+				.trim()
+				.toUpperCase()
+				.charAt(0) === handCharacter.toUpperCase().charAt(0)
+		) {
+			let handIndex = props.hands.findIndex(hand => hand.id === handId);
+			let h = [...props.hands];
+			h[handIndex].inputs[inputIndex].value = value;
 
-        props.setHands(h);
-    }
+			props.setHands(h);
+		}
+	};
 
-    let submitHand = (handId) => {
-        let handIndex = props.hands.findIndex(hand => hand.id === handId)
-        let h = [...props.hands];
-        h[handIndex].state = 'submitted';
+	let confirmHand = handId => {
+		let handIndex = props.hands.findIndex(hand => hand.id === handId);
+		let h = [...props.hands];
+		h[handIndex].state = 'waiting';
 
-        props.setHands(h);
-    }
+		props.setHands(h);
+	};
 
-    if (!props.gameExists) {
-        return (
-            <>
-                <NavbarGame username={props.username} quitGame={quitGame} users={props.users} timer={timer} />
-                <Alert variant="danger" className="m-3">
-                    <Alert.Heading>ERROR 404</Alert.Heading>
-                    <p>
-                        Not found
-                    </p>
-                    <hr />
-                    <p className="mb-0">
-                        This game does not exists!
-                    </p>
-                </Alert>
-            </>
-        );
-    }
+	let submitHand = handId => {
+		let handIndex = props.hands.findIndex(hand => hand.id === handId);
+		let h = [...props.hands];
+		h[handIndex].state = 'submitted';
 
-    // if(props.hands.length===0) {
-    //   return(  <Redirect to="/"/>)
-    // }
+		props.setHands(h);
+	};
 
-    return (
-        <>
-            <NavbarGame username={props.username} quitGame={quitGame} users={props.users} timer={timer} />
+	if (!props.gameExists) {
+		return (
+			<>
+				<NavbarGame
+					username={props.username}
+					quitGame={quitGame}
+					users={props.users}
+					timer={timer}
+				/>
+				<Alert variant='danger' className='m-3'>
+					<Alert.Heading>ERROR 404</Alert.Heading>
+					<p>Not found</p>
+					<hr />
+					<p className='mb-0'>This game does not exists!</p>
+				</Alert>
+			</>
+		);
+	}
 
-            {
-                props.gameStarted ? (
-                    <>
-                        <Table striped bordered hover responsive variant="dark">
-                            <thead>
-                                <tr>
-                                    {props.columns.map((c, i) => <th key={i}>{c}</th>)}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <Hands hands={props.hands} setInputScore={setInputScore} setInputValue={setInputValue} confirmHand={confirmHand} submitHand={submitHand} />
-                            </tbody>
-                        </Table >
-                        <TotalRow columns={props.columns} hands={props.hands} />
-                    </>
-                )
-                    :
-                    (
-                        <LoadingGame users={props.users} />
-                    )
-            }
+	return (
+		<>
+			<NavbarGame
+				username={props.username}
+				quitGame={quitGame}
+				users={props.users}
+				timer={timer}
+			/>
 
-        </>
-    )
-}
+			{props.gameStarted ? (
+				<>
+					<Table striped bordered hover responsive variant='dark'>
+						<thead>
+							<tr>
+								{props.columns.map((c, i) => (
+									<th key={i}>{c}</th>
+								))}
+							</tr>
+						</thead>
+						<tbody>
+							<Hands
+								hands={props.hands}
+								setInputScore={setInputScore}
+								setInputValue={setInputValue}
+								confirmHand={confirmHand}
+								submitHand={submitHand}
+							/>
+						</tbody>
+					</Table>
+					<TotalRow columns={props.columns} hands={props.hands} />
+				</>
+			) : (
+				<LoadingGame users={props.users} />
+			)}
+		</>
+	);
+};
 
-const useTimer = (connection) => {
-    const [timer, setTimer] = useState('sync...');
+const useTimer = connection => {
+	const [timer, setTimer] = useState('sync...');
 
-    useEffect(() => {
-        if (connection) {
-            connection.off('syncTimer');
-            connection.on('syncTimer', timer => setTimer(timer));
-            return () => connection.off('syncTimer');
-        }
-    }, [connection])
+	useEffect(() => {
+		if (connection) {
+			connection.off('syncTimer');
+			connection.on('syncTimer', timer => setTimer(timer));
+			return () => connection.off('syncTimer');
+		}
+	}, [connection]);
 
-    return timer;
-}
+	return timer;
+};
