@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "03e3e2b47612a1aeed34deac06a89a4d",
+    "revision": "eee9d80ffefbdb95142b172d3a070bfc",
     "url": "/body-girl-animal-client/index.html"
   },
   {
@@ -8,7 +8,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/body-girl-animal-client/static/css/2.de424728.chunk.css"
   },
   {
-    "revision": "dbbc2ff7cb9fc8dca3b2",
+    "revision": "3fb283a7dd2a047ca198",
     "url": "/body-girl-animal-client/static/css/main.fa37ff0a.chunk.css"
   },
   {
@@ -20,8 +20,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/body-girl-animal-client/static/js/2.0f3ec5ef.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "dbbc2ff7cb9fc8dca3b2",
-    "url": "/body-girl-animal-client/static/js/main.09b65b22.chunk.js"
+    "revision": "3fb283a7dd2a047ca198",
+    "url": "/body-girl-animal-client/static/js/main.06cdc9ce.chunk.js"
   },
   {
     "revision": "a33fb9a971d73990531a",
