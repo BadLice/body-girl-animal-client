@@ -9,6 +9,7 @@ import { Switch, Route, useHistory } from 'react-router-dom';
 export default () => {
 	// let server = 'http://192.168.1.69:15519';
 	let server = 'http://worddd.cloudno.de';
+	let prefixUrl = '/body-girl-animal-client';
 
 	const history = useHistory();
 
@@ -77,7 +78,7 @@ export default () => {
 
 	return (
 		<Switch>
-			<Route path='/game/:gameId'>
+			<Route path={prefixUrl+'/game/:gameId'}>
 				<Game
 					connection={connection}
 					setColumns={setColumns}
